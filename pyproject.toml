@@ -1,0 +1,29 @@
+[project]
+name = "metac-bot-template"
+version = "0.1.0"
+description = ""
+authors = [{ name = "Vasile Popescu", email = "elisescu@elisescu.com" }]
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "python-decouple>=3.8,<4",
+    "requests>=2.32.3,<3",
+    "asknews>=0.13.11,<0.14",
+    "numpy>=2.3.0,<3",
+    "openai>=2.0.0,<3",
+    "python-dotenv>=1.0.1,<2",
+    "forecasting-tools>=0.2.90,<0.4.0",
+]
+
+[dependency-groups]
+integrations = [
+    "lightningrod-ai>=0.1.14,<0.2",
+    "metaculus-bot-review>=0.1.1,<0.2",
+]
+dev = [
+    "ipykernel>=6.29.5,<7",
+]
+
+[tool.uv]
+exclude-newer = "7 days"
+exclude-newer-package = { forecasting-tools = false }
