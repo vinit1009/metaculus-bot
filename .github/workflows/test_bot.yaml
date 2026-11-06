@@ -28,7 +28,7 @@ jobs:
         run: uv sync --locked
       - name: Run bot
         run: |
-          uv run python main.py --mode test_questions
+          uv run python bot.py --mode test_questions
         # this reads the environment variables from the github repository.
         # Store under Settings --> Secrets and variables --> Actions
         env:
@@ -40,3 +40,10 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ASKNEWS_CLIENT_ID: ${{ secrets.ASKNEWS_CLIENT_ID }}
           ASKNEWS_SECRET: ${{ secrets.ASKNEWS_SECRET }}
+          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
+          # Optional settings, read by bot.py. Leave a repository variable unset to use the default.
+          BOT_FORECASTER_MODELS: ${{ vars.BOT_FORECASTER_MODELS }}
+          BOT_RESEARCH_MODELS: ${{ vars.BOT_RESEARCH_MODELS }}
+          BOT_HELPER_MODEL: ${{ vars.BOT_HELPER_MODEL }}
+          BOT_FORECASTS_PER_MODEL: ${{ vars.BOT_FORECASTS_PER_MODEL }}
+          BOT_LOWEST_PROBABILITY: ${{ vars.BOT_LOWEST_PROBABILITY }}
