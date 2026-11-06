@@ -1,3 +1,35 @@
+# A forecasting bot for FutureEval and MiniBench
+
+This repository is a fork of Metaculus's template bot. The template is kept as it
+is in `main.py`; the bot that runs here is `bot.py`. What it adds:
+
+- **Several models, in turn.** Each question is forecast by one current model from
+  each of three providers (through OpenRouter), and the framework combines the
+  answers: the median for yes/no questions, the average distribution for numeric
+  ones. Models trained by different companies make different mistakes.
+- **Two kinds of research.** A news search (AskNews, when a key is present) and a
+  web search carried out by a model that is asked for the current status, what is
+  scheduled before the deadline, base rates, and what markets or official
+  projections say. A search that fails is skipped rather than fatal.
+- **Base rates and the exact resolution rules** are explicit steps in the reasoning.
+- **Narrower limits on extreme answers**: yes/no forecasts stay between 2% and 98%.
+
+No person adjusts a forecast. The bot reads a question, researches it, forecasts,
+and submits, with its reasoning in a private comment on the question.
+
+Models and limits are read from environment variables (see `Settings` in `bot.py`),
+so they can be changed from the repository's Actions variables without touching
+the code. `tests/` checks the bot's logic with stand-in models and needs no keys:
+
+    uv run python -m unittest discover -s tests -v
+
+`scripts/forecast_one.py` forecasts one made-up question with the real models and
+submits nothing, as a check that the models and the research work.
+
+The rest of this file is the template's own README.
+
+---
+
 # Simple Metaculus forecasting bot
 This repository contains a simple bot meant to get you started with creating your own bot for the AI Forecasting Tournament. Go to https://www.metaculus.com/futureeval/participate/ for more info and tournament rules (and then go to the  "Getting Started" section of our [resources](https://www.metaculus.com/notebooks/38928/ai-benchmark-resources/#want-to-join-the-ai-forecasting-benchmark) page).
 
