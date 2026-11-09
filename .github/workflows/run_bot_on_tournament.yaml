@@ -13,7 +13,31 @@ concurrency:
 
 # Daily job to run the simple forecast bot
 jobs:
+  # The OpenRouter key is shared with other projects (a hackathon demo in judging), so the bot
+  # stops forecasting when the balance falls below a reserve. Set the repository variable
+  # BOT_CREDIT_RESERVE (dollars) to change it; if the balance cannot be read, the bot runs.
+  reserve:
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - name: Check the credit reserve
+        id: check
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          RESERVE: ${{ vars.BOT_CREDIT_RESERVE || '4' }}
+        run: |
+          left=$(curl -sf --max-time 20 -H "Authorization: Bearer $OPENROUTER_API_KEY" https://openrouter.ai/api/v1/credits \
+            | python3 -c 'import json, sys; d = json.load(sys.stdin)["data"]; print(round(d["total_credits"] - d["total_usage"], 2))') || left=unknown
+          echo "OpenRouter credit left: $left (reserve: $RESERVE)"
+          if [ "$left" != "unknown" ] && python3 -c "import sys; sys.exit(0 if float('$left') < float('$RESERVE') else 1)"; then
+            echo "::notice::OpenRouter credit is below the reserve, so this run is skipped."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
   forecast_job:
+    needs: reserve
+    if: needs.reserve.outputs.skip != 'true'
     runs-on: ubuntu-latest # determines the machine that will run the job - keep as is
     steps: # sets up the steps that will be run in order
       # setup repository with all necessary dependencies - keep as is
